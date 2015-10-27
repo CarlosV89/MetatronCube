@@ -3,43 +3,49 @@
  var ctx = canvas.getContext('2d');
  var centerX = canvas.width / 2;
  var centerY = canvas.height / 2;
+ var globalRad = 45;
+ var drawCircle = function(posX, posY, radius,color){
+    ctx.lineWidth=1;
+    if(color!==undefined){
+       ctx.strokeStyle=color;
+    }else{
+       ctx.strokeStyle='black';
+    }
+    ctx.beginPath();
 
- var radius = 45;
- var mysticalNumber = radius-6;
-var drawCircle = function(x, y,color){
- 	 if(color!==undefined){
- 	 	ctx.strokeStyle=color;
- 	 }else{
- 	 	ctx.strokeStyle='black';
- 	 }
- 	 ctx.beginPath();
-	 ctx.arc(x, y, radius, 0, 2*Math.PI, false);
-	 ctx.lineWidth=1;
-	 
-	 ctx.stroke();
-	 
-	 ctx.fillStyle='red';
-	 ctx.fillRect(x-1.5,y-1.5,3,3);
-	 ctx.beginPath();
- };
+    ctx.arc(posX, posY, radius, 0, 2*Math.PI, false);
+    ctx.stroke();
+    
+    ctx.fillStyle='red';
+    ctx.fillRect(posX-1.5,posY-1.5,3,3);
+    ctx.beginPath();
+}
 
-var drawCircleOfLife = function(){
+/*var drawCircleOfLife = function(){
 	for(i=0;i<=canvas.width+radius;i=i+radius){
 	 	for(o=0;o<=canvas.height+radius;o=o+radius){
 			drawCircle(i, o);
 	 	}
 	 }
-};
+};*/
 var drawMetatonsCube = function(){
-	drawCircle(centerX,centerY);
-	drawCircle(centerX,centerY-radius);
-	var newPoints =intersection(350,350,350,305);
-	var result = centerY;
-	console.log(newPoints);
-	drawCircle(newPoints[0],newPoints[1]);
-	drawCircle(newPoints[2],newPoints[3]);
+	var mainCirc = new Circle(centerX, centerY, globalRad);
+    var circ;
+    console.log(mainCirc);
 
-	result -= centerY-radius; 
+    drawCircle(mainCirc.posX, mainCirc.posY, mainCirc.radius);
+	
+    circ = new Circle(centerX, centerY+globalRad, globalRad);
+    drawCircle(circ.posX, circ.posY, circ.radius);
+    //drawCircle(centerX,centerY-radius);
+	
+    var newPoints =intersection(mainCirc, circ);
+	var result = centerY;
+
+	//drawCircle(newPoints[0],newPoints[1]);
+	//drawCircle(newPoints[2],newPoints[3]);
+
+	//result -= centerY-radius; 
 	
 	var resultX = centerX;
 	console.log(centerY-result/2);
@@ -47,6 +53,7 @@ var drawMetatonsCube = function(){
 
 
 };
+
 /*
 *	As we are defining the pattern of life, we will define the diameter of all *the cells (each circle) to be equal so I will not need to take in the raidus, *just the position of the circles
 *
@@ -55,9 +62,14 @@ var drawMetatonsCube = function(){
 *
 *
 */
-function intersection(x0, y0, x1, y1) {
-        var r0=45; var r1=45;
-        var a, distanceX, distanceY, d, h, rx, ry;
+function intersection(x0, y0, x1, y1, circ0, circ1) {
+        var x0 = circ0.posX;
+        var y0 = circ0.posY;
+        var x1 = circ1.posX;
+        var y1 = circ1.posY;
+        var r0 = circ0.radius; 
+        var r1 = circ0.radius;
+        var a, distanceX, distanceY, centersDistance, h, rx, ry;
         var x2, y2;
 
         /* 
@@ -68,29 +80,28 @@ function intersection(x0, y0, x1, y1) {
         distanceY = y1 - y0;
 
         /* Determine the straight-line distance between the centers. */
-        d = Math.sqrt((distanceY*distanceY) + (distanceX*distanceX));
+        centersDistance = Math.sqrt((distanceY*distanceY) + (distanceX*distanceX));
 
         /* Check for solvability. */
-        if (d > (r0 + r1)) {
+        if (centersDistance > (r0 + r1)) {
             /* no solution. circles do not intersect. */
             return false;
         }
-        if (d < Math.abs(r0 - r1)) {
+        if (centersDistance < Math.abs(r0 - r1)) {
             /* no solution. one circle is contained in the other */
             return false;
         }
 
         /* 
-        * Point 2, is where the line that is drawn from the two existing circles and the line(linear function) that defines the intersection points intersects
+        * Point 2, is where the line that is drawn from the two existing circles and the line(linear function) that defines the intersection points intersects, to find the coordinate of this point we first create a triangle using as references P0, P1, and one of the intersection points, then we can proceed to the next step
         *
-         */
-
-        /* Determine the distance from point 0 to point 2. */
-        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
+        * Determine the distance from the center of the first Circle to point 2 with the following formula; D is the distance between the center of both circles, x= (r0^2 - r1^2 + D^2)/ (2 x D)
+        */
+        a = ((r0*r0) - (r1*r1) + (centersDistance*centersDistance)) / (2.0 * centersDistance) ;
 
         /* Determine the coordinates of point 2. */
-        x2 = x0 + (distanceX * a/d);
-        y2 = y0 + (distanceY * a/d);
+        x2 = x0 + (distanceX * a/centersDistance);
+        y2 = y0 + (distanceY * a/centersDistance);
 
         /* Determine the distance from point 2 to either of the
          * intersection points.
@@ -100,8 +111,8 @@ function intersection(x0, y0, x1, y1) {
         /* Now determine the offsets of the intersection points from
          * point 2.
          */
-        rx = -distanceY * (h/d);
-        ry = distanceX * (h/d);
+        rx = -distanceY * (h/centersDistance);
+        ry = distanceX * (h/centersDistance);
 
         /* Determine the absolute intersection points. */
         var xi = x2 + rx;
