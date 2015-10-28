@@ -4,21 +4,24 @@
  var centerX = canvas.width / 2;
  var centerY = canvas.height / 2;
  var globalRad = 45;
- var drawCircle = function(posX, posY, radius,color){
-    ctx.lineWidth=1;
-    if(color!==undefined){
-       ctx.strokeStyle=color;
-    }else{
-       ctx.strokeStyle='black';
-    }
-    ctx.beginPath();
+ var drawCircle = function(circle){
+    if(circle.isDrawn===false){
+        ctx.lineWidth=1;
+        if(circle.color!==undefined){
+            ctx.strokeStyle=color;
+        }else{
+            ctx.strokeStyle='black';
+        }
+        ctx.beginPath();
 
-    ctx.arc(posX, posY, radius, 0, 2*Math.PI, false);
-    ctx.stroke();
+        ctx.arc(circle.posX, circle.posY, circle.radius, 0, 2*Math.PI, false);
+        ctx.stroke();
     
-    ctx.fillStyle='red';
-    ctx.fillRect(posX-1.5,posY-1.5,3,3);
-    ctx.beginPath();
+        ctx.fillStyle='red';
+        ctx.fillRect(circle.posX-1.5,circle.posY-1.5,3,3);
+        ctx.beginPath();
+        circle.isDrawn=true;
+    }
 }
 
 /*var drawCircleOfLife = function(){
@@ -30,16 +33,30 @@
 };*/
 var drawMetatonsCube = function(){
 	var mainCirc = new Circle(centerX, centerY, globalRad);
-    var circ;
+    drawCircle(mainCirc);
+
+    var circles=[];
+    for (var i = 0; i <= 6; i++) {
+        if(i=0){
+            circles.push(new Circle(centerX, centerY-globalRad, globalRad));
+        }else{
+            
+        }
+    };
+        
     console.log(mainCirc);
 
-    drawCircle(mainCirc.posX, mainCirc.posY, mainCirc.radius);
+    
 	
-    circ = new Circle(centerX, centerY+globalRad, globalRad);
-    drawCircle(circ.posX, circ.posY, circ.radius);
-    //drawCircle(centerX,centerY-radius);
-	
-    var newPoints =intersection(mainCirc, circ);
+    
+
+    drawCircle(circles[0]);
+   
+    var newPoints =intersection(mainCirc, circles[0]);
+
+    circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
+    drawCircle(circles[1]);
+
 	var result = centerY;
 
 	//drawCircle(newPoints[0],newPoints[1]);
@@ -62,7 +79,7 @@ var drawMetatonsCube = function(){
 *
 *
 */
-function intersection(x0, y0, x1, y1, circ0, circ1) {
+function intersection(circ0, circ1) {
         var x0 = circ0.posX;
         var y0 = circ0.posY;
         var x1 = circ1.posX;
