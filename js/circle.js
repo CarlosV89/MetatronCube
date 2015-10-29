@@ -3,5 +3,4 @@ function Circle(posX, posY, radius, color) {
 	this.posY=posY;
 	this.radius=radius;
 	this.color=color;
-	this.isDrawn=false;
 }

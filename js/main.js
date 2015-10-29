@@ -4,11 +4,14 @@
  var centerX = canvas.width / 2;
  var centerY = canvas.height / 2;
  var globalRad = 45;
+ var circles=[];
+ var mainCirc = new Circle(centerX, centerY, globalRad, "red");
+ var largCirc = new Circle(centerX, centerY, globalRad*2, "purple")
  var drawCircle = function(circle){
-    if(circle.isDrawn===false){
+    if(exists(circle.posX, circle.posY)===false){
         ctx.lineWidth=1;
         if(circle.color!==undefined){
-            ctx.strokeStyle=color;
+            ctx.strokeStyle=circle.color;
         }else{
             ctx.strokeStyle='black';
         }
@@ -20,57 +23,61 @@
         ctx.fillStyle='red';
         ctx.fillRect(circle.posX-1.5,circle.posY-1.5,3,3);
         ctx.beginPath();
-        circle.isDrawn=true;
+        circles.push(circle);
     }
 }
 
-/*var drawCircleOfLife = function(){
-	for(i=0;i<=canvas.width+radius;i=i+radius){
-	 	for(o=0;o<=canvas.height+radius;o=o+radius){
-			drawCircle(i, o);
-	 	}
-	 }
-};*/
-var drawMetatonsCube = function(){
-	var mainCirc = new Circle(centerX, centerY, globalRad);
-    drawCircle(mainCirc);
-
-    var circles=[];
-    //draw First level - Seed of Life
+var exists = function(posX, posY){
+	for (var i = circles.length - 1; i >= 0; i--) {
+        console.log
+        if(circles[i].posX == posX && circles[i].posY==posY){
+            return true
+        }else return false;
+    };
+};
+var drawSeedOfLife = function(){
+    var circ;
     for (var i = 0; i < 6; i++) {
         if(i==0){
-            circles.push(new Circle(centerX-globalRad, centerY, globalRad));
-            drawCircle(circles[i]);
+            circ = new Circle(centerX+globalRad, centerY, globalRad);
+            drawCircle(circ);
         }else{
+           
+            
             var newPoints =intersection(mainCirc, circles[i-1]);
+            
+            if(i>3){
+                var newPoints1 =intersection(mainCirc, circles[0]);
+                var newPoints2 =intersection(mainCirc, circles[1]);
+                console.log(circles[0],0);
+                console.log(circles[1],1);
+                console.log(newPoints1,newPoints2);
+            }
             circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
+          
             drawCircle(circles[i]);
+            
         }
-    };
+    }
+    var o = circles.length;
+
+    
+    /*for (var i = 1; i < o; i++) {
+        var newPoints =intersection(circles[circles.length-i], circles[circles.length-i-1]);
         
-    console.log(mainCirc);
-
+        circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
+        
+        drawCircle(circles[circles.length-1], circles.length);
+    };*/
+};
+var drawMetatonsCube = function(){
+    drawCircle(mainCirc);
+    //drawCircle(largCirc);
+    //drawCircle(new Circle(327.5, 311.02885682970026, globalRad, "blue"));
+    //drawCircle(new Circle(327.5, 311.0288568297003, globalRad, "red"));
+    //draw First level - Seed of Life
     
-	
-    
-
-    
-   
-    
-
-    
-
-	var result = centerY;
-
-	//drawCircle(newPoints[0],newPoints[1]);
-	//drawCircle(newPoints[2],newPoints[3]);
-
-	//result -= centerY-radius; 
-	
-	var resultX = centerX;
-	console.log(centerY-result/2);
-
-
+    drawSeedOfLife();   
 
 };
 
