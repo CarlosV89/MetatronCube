@@ -36,11 +36,15 @@ var drawMetatonsCube = function(){
     drawCircle(mainCirc);
 
     var circles=[];
-    for (var i = 0; i <= 6; i++) {
-        if(i=0){
-            circles.push(new Circle(centerX, centerY-globalRad, globalRad));
+    //draw First level - Seed of Life
+    for (var i = 0; i < 6; i++) {
+        if(i==0){
+            circles.push(new Circle(centerX-globalRad, centerY, globalRad));
+            drawCircle(circles[i]);
         }else{
-            
+            var newPoints =intersection(mainCirc, circles[i-1]);
+            circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
+            drawCircle(circles[i]);
         }
     };
         
@@ -50,12 +54,11 @@ var drawMetatonsCube = function(){
 	
     
 
-    drawCircle(circles[0]);
+    
    
-    var newPoints =intersection(mainCirc, circles[0]);
+    
 
-    circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
-    drawCircle(circles[1]);
+    
 
 	var result = centerY;
 
