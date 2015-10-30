@@ -5,56 +5,55 @@
  var centerY = canvas.height / 2;
  var globalRad = 45;
  var circles=[];
- var mainCirc = new Circle(centerX, centerY, globalRad, "red");
+ circles.push(new Circle(centerX, centerY, globalRad, "red"));
+ 
  var largCirc = new Circle(centerX, centerY, globalRad*2, "purple")
  var drawCircle = function(circle){
-    if(exists(circle.posX, circle.posY)===false){
-        ctx.lineWidth=1;
-        if(circle.color!==undefined){
-            ctx.strokeStyle=circle.color;
-        }else{
-            ctx.strokeStyle='black';
-        }
-        ctx.beginPath();
+            ctx.lineWidth=1;
+            if(circle.color!==undefined){
+                ctx.strokeStyle=circle.color;
+            }else{
+                ctx.strokeStyle='black';
+            }
+            ctx.beginPath();
 
-        ctx.arc(circle.posX, circle.posY, circle.radius, 0, 2*Math.PI, false);
-        ctx.stroke();
+            ctx.arc(circle.posX, circle.posY, circle.radius, 0, 2*Math.PI, false);
+            ctx.stroke();
+        
+            ctx.fillStyle='red';
+            ctx.fillRect(circle.posX-1.5,circle.posY-1.5,3,3);
+            ctx.beginPath();
+            circles.push(circle);
     
-        ctx.fillStyle='red';
-        ctx.fillRect(circle.posX-1.5,circle.posY-1.5,3,3);
-        ctx.beginPath();
-        circles.push(circle);
-    }
 }
 
 var exists = function(posX, posY){
-	for (var i = circles.length - 1; i >= 0; i--) {
-        console.log
-        if(circles[i].posX == posX && circles[i].posY==posY){
+    console.log(circles.length, circles.length-1);
+    for (var i = circles.length - 1; i >= 0; i--) {
+            console.log(i);
+        if(circles[i]!==undefined && circles[i].posX == posX && circles[i].posY==posY){
             return true
         }else return false;
-    };
+    }
+    
 };
 var drawSeedOfLife = function(){
     var circ;
     for (var i = 0; i < 6; i++) {
         if(i==0){
-            circ = new Circle(centerX+globalRad, centerY, globalRad);
-            drawCircle(circ);
-        }else{
-           
+            circles.push(new Circle(centerX+globalRad, centerY, globalRad));
+            drawCircle(circles[i]);
+            drawCircle(circles[i+1]);
+        }else{ 
+            var newPoints =intersection(circles[0], circles[i]);
+            circ=new Circle(newPoints[0], newPoints[1], globalRad);
+            if (!exists(circ)) {
+                circles.push(circ);
+                drawCircle(circ);
+            };
             
-            var newPoints =intersection(mainCirc, circles[i-1]);
-            
-            if(i>3){
-                var newPoints1 =intersection(mainCirc, circles[0]);
-                var newPoints2 =intersection(mainCirc, circles[1]);
-                console.log(circles[0],0);
-                console.log(circles[1],1);
-                console.log(newPoints1,newPoints2);
-            }
-            circles.push(new Circle(newPoints[0], newPoints[1], globalRad));
-          
+          //console.log(circles,"circles");
+          //console.log(circles[i],"circles-i");
             drawCircle(circles[i]);
             
         }
@@ -71,14 +70,9 @@ var drawSeedOfLife = function(){
     };*/
 };
 var drawMetatonsCube = function(){
-    drawCircle(mainCirc);
-    //drawCircle(largCirc);
-    //drawCircle(new Circle(327.5, 311.02885682970026, globalRad, "blue"));
-    //drawCircle(new Circle(327.5, 311.0288568297003, globalRad, "red"));
-    //draw First level - Seed of Life
-    
-    drawSeedOfLife();   
 
+    //draw First level - Seed of Life
+    drawSeedOfLife();   
 };
 
 /*
