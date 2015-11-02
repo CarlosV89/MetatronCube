@@ -5,10 +5,7 @@
  var centerY = canvas.height / 2;
  var globalRad = 45;
  var circles=[];
- circles.push(new Circle(centerX, centerY, globalRad, "red"));
- 
- var largCirc = new Circle(centerX, centerY, globalRad*2, "purple")
- var drawCircle = function(circle){
+ function drawCircle(circle){
             ctx.lineWidth=1;
             if(circle.color!==undefined){
                 ctx.strokeStyle=circle.color;
@@ -27,39 +24,36 @@
     
 }
 
-var exists = function(posX, posY){
-    console.log(circles.length, circles.length-1);
+function exists(circle){
     for (var i = circles.length - 1; i >= 0; i--) {
-            console.log(i);
-        if(circles[i]!==undefined && circles[i].posX == posX && circles[i].posY==posY){
-            return true
-        }else return false;
-    }
-    
+        if (circles[i]!==undefined) {
+           if(circles[i].posX == circle.posX && circles[i].posY==circle.posY){
+                return true;
+            }
+        };        
+    };
+    return false;
 };
-var drawSeedOfLife = function(){
+function drawSeedOfLife(){
+    drawCircle(new Circle(centerX, centerY, globalRad, "red"));
+    var largCirc = new Circle(centerX, centerY, globalRad*2, "purple")
     var circ;
+    var circ2;
     for (var i = 0; i < 6; i++) {
         if(i==0){
-            circles.push(new Circle(centerX+globalRad, centerY, globalRad));
-            drawCircle(circles[i]);
-            drawCircle(circles[i+1]);
+            drawCircle(new Circle(centerX+globalRad, centerY, globalRad));
         }else{ 
             var newPoints =intersection(circles[0], circles[i]);
             circ=new Circle(newPoints[0], newPoints[1], globalRad);
-            if (!exists(circ)) {
-                circles.push(circ);
+            circ2=new Circle(newPoints[2], newPoints[3], globalRad);
+            if (exists(circ)==false) {
                 drawCircle(circ);
             };
-            
-          //console.log(circles,"circles");
-          //console.log(circles[i],"circles-i");
-            drawCircle(circles[i]);
-            
+            if (exists(circ2)==false) {
+                drawCircle(circ2);
+            };
         }
     }
-    var o = circles.length;
-
     
     /*for (var i = 1; i < o; i++) {
         var newPoints =intersection(circles[circles.length-i], circles[circles.length-i-1]);
@@ -69,12 +63,56 @@ var drawSeedOfLife = function(){
         drawCircle(circles[circles.length-1], circles.length);
     };*/
 };
-var drawMetatonsCube = function(){
+function drawMetatonsCube(){
 
     //draw First level - Seed of Life
     drawSeedOfLife();   
 };
+/**
+   * Decimal adjustment of a number.
+   *
+   * @param {String}  type  The type of adjustment.
+   * @param {Number}  value The number.
+   * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+   * @returns {Number} The adjusted value.
+   */
+  function decimalAdjust(type, value, exp) {
+    // If the exp is undefined or zero...
+    if (typeof exp === 'undefined' || +exp === 0) {
+      return Math[type](value);
+    }
+    value = +value;
+    exp = +exp;
+    // If the value is not a number or the exp is not an integer...
+    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+      return NaN;
+    }
+    // Shift
+    value = value.toString().split('e');
+    value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+    // Shift back
+    value = value.toString().split('e');
+    return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+  }
 
+  // Decimal round
+  if (!Math.round10) {
+    Math.round10 = function(value, exp) {
+      return decimalAdjust('round', value, exp);
+    };
+  }
+  // Decimal floor
+  if (!Math.floor10) {
+    Math.floor10 = function(value, exp) {
+      return decimalAdjust('floor', value, exp);
+    };
+  }
+  // Decimal ceil
+  if (!Math.ceil10) {
+    Math.ceil10 = function(value, exp) {
+      return decimalAdjust('ceil', value, exp);
+    };
+  }
 /*
 *	As we are defining the pattern of life, we will define the diameter of all *the cells (each circle) to be equal so I will not need to take in the raidus, *just the position of the circles
 *
@@ -140,9 +178,13 @@ function intersection(circ0, circ1) {
         var xi_prime = x2 - rx;
         var yi = y2 + ry;
         var yi_prime = y2 - ry;
-
+        xi=Math.round10(xi,-1);
+        yi=Math.round10(yi,-1);
+        xi_prime=Math.round10(xi_prime,-1);
+        yi_prime=Math.round10(yi_prime,-1);
         return [xi, yi, xi_prime, yi_prime];
     }
+
 
  
 
