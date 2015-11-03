@@ -39,7 +39,7 @@ function exists(circle){
 }
 function drawSeedOfLife(){
     drawCircle(new Circle(centerX, centerY, globalRad, "red"));
-    var largCirc = new Circle(centerX, centerY, globalRad*2, "purple");
+
     var circ;
     var circ2;
     var newPoints;
@@ -59,8 +59,8 @@ function drawSeedOfLife(){
         }
     }
 
-    for (var o = circles.length-1; o > 1; o--) {
-      for (var p = circles.length - 1; p >= 1; p--) {
+    for (var o = circles.length-1; o > 0; o--) {
+      for (var p = circles.length - 1; p > 0; p--) {
         console.log("o "+o,circles[o]);
         console.log("p "+p, circles[p]);
         newPoints=intersection(circles[o], circles[p]);
@@ -100,7 +100,11 @@ function drawSeedOfLife(){
 function drawMetatonsCube(){
 
     //draw First level - Seed of Life
-    drawSeedOfLife();   
+    drawSeedOfLife(); 
+    var largCirc = new Circle(centerX, centerY, globalRad*2, "purple");
+    drawCircle(largCirc);
+    var largerCirc = new Circle(centerX, centerY, globalRad*3, "green");
+    drawCircle(largerCirc); 
 }
 /**
    * Decimal adjustment of a number.
