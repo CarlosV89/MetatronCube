@@ -27,34 +27,68 @@
 function exists(circle){
     for (var i = circles.length - 1; i >= 0; i--) {
         if (circles[i]!==undefined) {
-           if(circles[i].posX == circle.posX && circles[i].posY==circle.posY){
+           if(
+            circle.posX >= circles[i].posX-1  && circle.posX <= circles[i].posX+1 &&
+             
+            circle.posY >= circles[i].posY-1  && circle.posY <= circles[i].posY+1){
                 return true;
             }
-        };        
-    };
+        }       
+    }
     return false;
-};
+}
 function drawSeedOfLife(){
     drawCircle(new Circle(centerX, centerY, globalRad, "red"));
-    var largCirc = new Circle(centerX, centerY, globalRad*2, "purple")
+    var largCirc = new Circle(centerX, centerY, globalRad*2, "purple");
     var circ;
     var circ2;
+    var newPoints;
     for (var i = 0; i < 6; i++) {
-        if(i==0){
-            drawCircle(new Circle(centerX+globalRad, centerY, globalRad));
+        if(i===0){
+            drawCircle(new Circle(centerX, centerY-globalRad, globalRad));
         }else{ 
-            var newPoints =intersection(circles[0], circles[i]);
+            newPoints=intersection(circles[0], circles[i]);
             circ=new Circle(newPoints[0], newPoints[1], globalRad);
             circ2=new Circle(newPoints[2], newPoints[3], globalRad);
-            if (exists(circ)==false) {
+            if (exists(circ)===false) {
                 drawCircle(circ);
-            };
-            if (exists(circ2)==false) {
+            }
+            if (exists(circ2)===false) {
                 drawCircle(circ2);
-            };
+            }
         }
     }
-    
+
+    for (var o = circles.length-1; o > 1; o--) {
+      for (var p = circles.length - 1; p >= 1; p--) {
+        console.log("o "+o,circles[o]);
+        console.log("p "+p, circles[p]);
+        newPoints=intersection(circles[o], circles[p]);
+
+        
+        if(!isNaN(newPoints[0])){
+          circ=new Circle(newPoints[0], newPoints[1], globalRad);
+          circ2=new Circle(newPoints[2], newPoints[3], globalRad);  
+        }
+        
+        
+
+        if (circ !== undefined && exists(circ)===false) {
+            console.log("se dibuja el 1", circ);
+            drawCircle(circ);
+        }
+        if (circ2 !== undefined && exists(circ2)===false) {
+            console.log("se dibuja el 2", circ2);
+            drawCircle(circ2);  
+        }
+      }
+      
+
+      
+    }
+
+     
+
     /*for (var i = 1; i < o; i++) {
         var newPoints =intersection(circles[circles.length-i], circles[circles.length-i-1]);
         
@@ -62,12 +96,12 @@ function drawSeedOfLife(){
         
         drawCircle(circles[circles.length-1], circles.length);
     };*/
-};
+}
 function drawMetatonsCube(){
 
     //draw First level - Seed of Life
     drawSeedOfLife();   
-};
+}
 /**
    * Decimal adjustment of a number.
    *
